@@ -98,7 +98,33 @@ const loginUser = async(req,res) => {
 
 
 }
+
+const changeCurrentPassword = async(req,res) => {
+    const {oldPassword, newPassword} = req.body 
+
+    if(!(newPassword && oldPassword)){
+        return res.status(401).json({message: "oldpassword and newpassword is required" })
+    }
+    
+    const user = await User.findById(req.user_id)
+    const isPasswordCorrect = await user.isPasswordCorrect(oldPassword)
+
+    if (!isPasswordCorrect) {
+            return res.status(400).json({message: "Invalid old Password"})
+    }
+    user.password = newPassword
+    const updateduser = await user.save({validateBeforeSave: false})
+  
+    return res.status(200).json({
+        message:"Password Changed Sucessfully"
+    })
+}
+
+
+
+
 export {
     registerUser,
-    loginUser
+    loginUser,
+    changeCurrentPassword
 }

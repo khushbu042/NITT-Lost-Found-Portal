@@ -9,14 +9,6 @@ const ItemSchema = new mongoose.Schema({
         type : String,
         required: true
     },
-    type: {
-        type : String,
-        required: true
-    },
-    type: {
-        type : String,
-        required: true
-    },
     category: {
         type : String,
         required: true
@@ -26,10 +18,12 @@ const ItemSchema = new mongoose.Schema({
         required: true
     },
     image:{
-        type: String
+        type: String,
+        default: null
     },
     location:{
-        type : String
+        type : String,
+        default: null
     }
 
 },{timeStamps: true});
