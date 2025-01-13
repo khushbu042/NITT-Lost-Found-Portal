@@ -2,6 +2,7 @@ import { uploadONCloud } from "../utils/cloud.js";
 import { Item } from "../models/item.model.js";
 
 const reportItem = async(req,res) => {
+
     try{
         const userId = req.user_id;
         if(!userId){
@@ -50,7 +51,7 @@ const reportItem = async(req,res) => {
         console.error("Error reporting item:", error);
         return res.status(500).json({
             message: "An error occurred while reporting the item.",
-           errorMessage: error
+            errorMessage: error
         });
     }
 
@@ -86,6 +87,7 @@ const getAllItem = async(req,res) => {
 const getItemDetails = async (req, res) => {
     try {
         const { id } = req.params;
+        console.log(id);
         if(!id){
             return res.status(404).json({ message: "Please select item for detail" });
         }
@@ -104,12 +106,11 @@ const updateItem = async (req, res) => {
     try {
         const { id } = req.params;
         const userId = req.user_id;
-
+       
         const item = await Item.findById(id);
         if (!item) {
             return res.status(404).json({ message: "Item not found." });
         }
-
         // Check if the authenticated user is the owner of the item
         if (item.user_id.toString() !== userId) {
             return res.status(403).json({ message: "You are not authorized to update this item." });
@@ -117,7 +118,6 @@ const updateItem = async (req, res) => {
 
         const updates = req.body;
         const updatedItem = await Item.findByIdAndUpdate(id, updates, { new: true });
-
         res.status(200).json({
             message: "Item updated successfully.",
             item: updatedItem,
@@ -165,6 +165,9 @@ const getUserItems = async (req, res) => {
         res.status(500).json({ message: "An error occurred while fetching user items.", error });
     }
 };
+
+
+
 
 
 

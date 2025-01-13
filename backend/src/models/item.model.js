@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-
+import {User} from "./user.model.js"
 const ItemSchema = new mongoose.Schema({
     user_id : {
         type: mongoose.Schema.Types.ObjectId,

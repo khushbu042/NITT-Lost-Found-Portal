@@ -18,13 +18,13 @@ itemRouter.route('/report-item').post(jwtVerify, upload.single("image"), reportI
 itemRouter.route('/items').get(jwtVerify, getAllItem);
 
 // Get all items reported by the authenticated user
-itemRouter.route('/items/user').get(jwtVerify, getUserItems);
+itemRouter.route('/user').get(jwtVerify, getUserItems);
 
 // Get details of a specific item by ID
 itemRouter.route('/items/:id').get(jwtVerify, getItemDetails);
 
 // Update a specific item by ID
-itemRouter.route('/items/:id').put(jwtVerify, updateItem);
+itemRouter.route('/item/:id').put(jwtVerify, updateItem);
 
 // Delete a specific item by ID
 itemRouter.route('/items/:id').delete(jwtVerify, deleteItem);
