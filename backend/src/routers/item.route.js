@@ -30,4 +30,4 @@ itemRouter.route('/item/:id').put(jwtVerify, updateItem);
 itemRouter.route('/items/:id').delete(jwtVerify, deleteItem);
 
 
-export {itemRouter}
+export {itemRoute}

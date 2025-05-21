@@ -1,132 +1,100 @@
-import { User } from "../models/user.model.js"
+import sendResponse from "../utils/sendResponse.js";
+import {User} from "../models/user.model.js"
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken"
 
-
-const registerUser =  async(req,res)=> {
+const registerUser = async (req,res) => {
     try {
-        const {username, fullName, email , password, contactNo} = req.body
-    
-        if([username,fullName,email,password,contactNo].some((field)=>{ !field || field.trim=== "" })){
-            return res.status(400).json({message:"All fields are required"})
+        
+        console.log("req body:",req.body);
+        const { fullName, email, password} = req.body;
+        console.log("req detail:", fullName,email,password);
+        if (!(fullName && email && password)) {
+            return sendResponse(res,false,"username, email and password are required",null,400);
         }
+        //finding a email in database if it found login is required
+        //Check if user already exists
+        const existingUser = await User.findOne({email})
 
-        const existedUser = await User.findOne({
-            $or : [{username},{email}]
-        })
-
-        if(existedUser){
-            return res.status(400).json({message: "user is already existed please login !"});
+        console.log("existing User", existingUser)
+        if(existingUser){
+            return sendResponse(res,false,"User is already registerd please login",null,409);
         }
+        // Hash password
+        const hashedPassword = await bcrypt.hash(password, 10);
+        console.log("hashedPassword:", hashedPassword);
 
-    
-        const createdUser = await User.create({
-            username: username,
-            fullName: fullName,
-            email: email,
-            password: password,
-            contactNo: contactNo
-        }) 
-        if(!createdUser){
-            return res.status(400).json({message: "something went wrong"});
-        }
-
-        //------------------------remove passwrod and refresh token field from response
-        const registeredUser = await User.findById(createdUser._id).select("-password")
-        if(!registeredUser){
-            return res.status(400).json({message: "User registered not successfully"});
-        }
-
-        return res.status(200).json({
-            message: "User is Registered Successfully !",
-            data: registeredUser
+        //now i will store in database or create a User
+        const user = await User.create({
+            fullName,
+            password:hashedPassword,
+            email
         });
+        console.log("after Creating user:", user);
+
+        if(!user){
+            return sendResponse(res,false,"something wrong when user is created",null,401);
         }
-        catch (error) {
-            res.status(500).json({ message: "Internal server error", error: error.message });
-        }
-}
+        const createdUser = await User.findById(user._id).select("-password");
+        console.log("after removing Password:", createdUser);
+        return sendResponse(res,true,"User created successfully",createdUser,201);
 
-const loginUser = async(req,res) => {
-    const{email, password} = req.body
-
-    if(!(email && password)){
-        return res.status(400).json({
-            message: "email and password is required"
-        })
-    }
-
-    const existingUser = await User.findOne({email});
-
-    if(!existingUser){
-        return res.status(400).json({
-            message: "user not register please register user"
-        })
-    }
-
-    try{
-        //-------- Password check
-        const isPasswordValid = await existingUser.isPasswordCorrect(password)
-        if(!isPasswordValid){
-            return res.status(400).json({
-                message: "Please Enter Correct Password"
-            })
-        }
-
-        const accessToken = existingUser.generateAccessToken();
-        if(!accessToken){
-            return res.status(400).json({
-                message: "something wrong to create AccessToken"
-            })
-        }
-
-        const loggedInUser = await User.findById(existingUser._id).select("-password")
-
-        //------------------------- send cokkies with accesss token and response
-        const options = {
-            httpOnly: true,
-            secure: true
-        }
-
-        return res
-        .status(200)
-        .cookie("accessToken",accessToken,options)
-        .json({
-            message:"User Logging Successfully",
-            data: {loggedInUser, accessToken}
-        })
     }catch(error){
-        res.status(500).json({ message: "Internal server error", error: error.message });
+        console.log("catch block error")
+        console.error(error);
+        return sendResponse(res,false,"Internal Server Error",null,500);
     }
-   
-
 
 }
 
-const changeCurrentPassword = async(req,res) => {
-    const {oldPassword, newPassword} = req.body 
+const loginUser = async (req, res) => {
+    try{
+        const{email, password}= req.body
+        if(!(email && password)){
+            return sendResponse(res,false,"Email and Password is required",null,400);
+        }
 
-    if(!(newPassword && oldPassword)){
-        return res.status(401).json({message: "oldpassword and newpassword is required" })
-    }
-    
-    const user = await User.findById(req.user_id)
-    const isPasswordCorrect = await user.isPasswordCorrect(oldPassword)
+        //finding email in database
+        const existingUser = await User.findOne({email})
+        if(!existingUser){
+            return sendResponse(res,false,"user is not registered please register",null,401);
 
-    if (!isPasswordCorrect) {
-            return res.status(400).json({message: "Invalid old Password"})
+        }
+
+        // comapre password 
+        const validPassword = await bcrypt.compare(password,existingUser.password) 
+       
+        if(!validPassword){
+            return sendResponse(res,false,"password is incorrect",null,401);
+
+        }
+
+        // create a json Web token 
+        const jwtToken = jwt.sign(
+            {_id: existingUser._id},
+            process.env.JWT_SECRET_KEY,
+            {expiresIn:"1h"}
+        );  
+
+        // send token in cookie or header
+        res.cookie("jwtToken",jwtToken, {
+            httpOnly: true,       // JS se access na ho
+            secure: false,        // true in production with HTTPS
+            sameSite: "lax",   // CSRF attack safe
+            maxAge: 60 * 60 * 1000 // 1 hour
+        });
+        return sendResponse(res,true,"Login successful",existingUser,200);
+
+    }catch(error){
+        console.log("catch block error",error);
+        return sendResponse(res,false,"Internal Server Error",null,500);
     }
-    user.password = newPassword
-    const updateduser = await user.save({validateBeforeSave: false})
-  
-    return res.status(200).json({
-        message:"Password Changed Sucessfully"
-    })
 }
 
 
-
-
-export {
+export { 
     registerUser,
-    loginUser,
-    changeCurrentPassword
+    loginUser
 }
+
+
