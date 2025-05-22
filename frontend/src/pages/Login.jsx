@@ -19,7 +19,7 @@ const Login = () => {
             setMsg(response.message);
             setIsLoggedIn(true);
             navigate('/dashboard');
-        } catch (error) {
+        } catch (err) {
             console.log("error message:",err.message)
             setMsg(err.message);
         }

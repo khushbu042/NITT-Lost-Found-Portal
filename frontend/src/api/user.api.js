@@ -10,6 +10,12 @@ export const login = async({email,password}) => {
         {email,password},
         {withCredentials : true}
     );
-    console.log("Login Data after Bachend API",res);
+    return res.data;
+}
+
+export const logout = async () => {
+    const res = await axios.post("http://localhost:8000/api/user/logout",{},{
+        withCredentials: true,
+    })
     return res.data;
 }

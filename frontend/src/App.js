@@ -5,6 +5,7 @@ import Login from './pages/Login.jsx';
 import SignUp from './pages/Signup.jsx';
 import Navbar from "./components/Navbar.jsx";
 import ReportItemForm from "./pages/Report_Item.jsx"
+import Dashboard from "./pages/Dashboard.jsx"
 
 function App() {
   return (
