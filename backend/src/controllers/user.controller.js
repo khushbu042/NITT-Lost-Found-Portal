@@ -91,10 +91,22 @@ const loginUser = async (req, res) => {
     }
 }
 
+const logoutUser = (req, res) => {
+   try {
+     res.clearCookie("jwtToken");
+     return sendResponse(res, true, "Logout successful", null, 200);
+   } catch (error) {
+        console.log("catch block error")
+        console.error(error);
+        return sendResponse(res,false,"Internal Server Error",null,500);
+    }
+};
+
 
 export { 
     registerUser,
-    loginUser
+    loginUser,
+    logoutUser
 }
 
 
