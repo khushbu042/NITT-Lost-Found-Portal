@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { reportItem } from "../api/item.api";
 
 const ReportItemForm = () => {
   const [formData, setFormData] = useState({
@@ -8,6 +9,7 @@ const ReportItemForm = () => {
     category: "lost", 
     image: null,
   });
+  const [msg,setMsg] = useState("");
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -24,20 +26,22 @@ const ReportItemForm = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
-    
-    // prepare for API call
-    const data = new FormData();
-    data.append("title", formData.title);
-    data.append("description", formData.description);
-    data.append("location", formData.location);
-    data.append("category", formData.category);
-    data.append("image", formData.image);
-
-    // For now just log it
-    console.log("Submitting: ", formData);
-    // 🔗 Call your API here with data (FormData)
+    const data = new FormData();   // for text and image both
+    data.append('title', formData.title); 
+    data.append('description', formData.description); 
+    data.append('location', formData.location); 
+    data.append('category', formData.category); 
+    data.append('image', formData.image);  //image file
+    try {
+      const response = await reportItem(data);
+      setMsg(response.message);
+      setFormData({});
+    } catch (error) {
+      console.log("error message:", error)
+      setMsg(error.meesage);
+    }
   };
 
   return (
@@ -110,6 +114,7 @@ const ReportItemForm = () => {
         >
           Submit Item
         </button>
+        <p>{msg}</p>
       </form>
     </div>
   );

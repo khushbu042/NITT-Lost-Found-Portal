@@ -6,6 +6,7 @@ import SignUp from './pages/Signup.jsx';
 import Navbar from "./components/Navbar.jsx";
 import ReportItemForm from "./pages/Report_Item.jsx"
 import Dashboard from "./pages/Dashboard.jsx"
+import Search from "./pages/Search.jsx"
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
           <Route path="/signup" element = {<SignUp/>}></Route>
           <Route path='/report-item' element = {<ReportItemForm/>}></Route>
           <Route path='/dashboard' element = {<Dashboard/>}></Route>
+          <Route path='/search' element = {<Search/>}></Route>
        </Routes>
     </>
       

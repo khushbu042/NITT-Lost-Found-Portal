@@ -1,33 +1,38 @@
 import { Router } from "express";
-import { jwtVerify } from "../middlewares/auth.middleware.js";
+import { authMiddleware } from "../middlewares/auth.middleware.js";
 import { upload } from "../middlewares/multer.middleware.js";
 import { 
-    deleteItem,
-    getAllItem,
-    getItemDetails,
-    getUserItems,
-    reportItem, 
-    updateItem } from "../controllers/item.controller.js";
+    // deleteItem,
+    // getAllItem,
+    // getItemDetails,
+    // getUserItems,
+    reportItem,
+    searchItems
+    // updateItem 
+} from "../controllers/item.controller.js";
 
-const itemRouter = Router();
+const itemRoute = Router();
 
 // Report a new item
-itemRouter.route('/report-item').post(jwtVerify, upload.single("image"), reportItem);
+itemRoute.route('/report-item').post(authMiddleware, upload.single("image"), reportItem);
 
-// Get all items (with optional filters)
-itemRouter.route('/items').get(jwtVerify, getAllItem);
+//search items based on condition
+itemRoute.route('/search').get(searchItems);
 
-// Get all items reported by the authenticated user
-itemRouter.route('/user').get(jwtVerify, getUserItems);
+// // Get all items (with optional filters)
+// itemRouter.route('/items').get(jwtVerify, getAllItem);
 
-// Get details of a specific item by ID
-itemRouter.route('/items/:id').get(jwtVerify, getItemDetails);
+// // Get all items reported by the authenticated user
+// itemRouter.route('/user').get(jwtVerify, getUserItems);
 
-// Update a specific item by ID
-itemRouter.route('/item/:id').put(jwtVerify, updateItem);
+// // Get details of a specific item by ID
+// itemRouter.route('/items/:id').get(jwtVerify, getItemDetails);
 
-// Delete a specific item by ID
-itemRouter.route('/items/:id').delete(jwtVerify, deleteItem);
+// // Update a specific item by ID
+// itemRouter.route('/item/:id').put(jwtVerify, updateItem);
+
+// // Delete a specific item by ID
+// itemRouter.route('/items/:id').delete(jwtVerify, deleteItem);
 
 
 export {itemRoute}

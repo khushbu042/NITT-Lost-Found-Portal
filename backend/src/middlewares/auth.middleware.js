@@ -1,20 +1,21 @@
-import jwt from "jsonwebtoken";
+import sendResponse from "../utils/sendResponse.js";
+import verifyToken from "../utils/verifyToken.js";
 
-const jwtVerify = async (req,res,next)=> {
+const authMiddleware = async (req,res,next)=> {
     try {
-        const token = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ","");
+        const token = req.cookies?.jwtToken || req.header("Authorization")?.replace("Bearer ","");
         if(!token){
-           return res.status(401).json({message: "Unauthorized access: No token provided"})
+           return sendResponse(res, false, "Login first", null, 401);
         } 
-        const decodedToken = jwt.verify(token,process.env.ACCESS_TOKEN_SECRET)
-        
-        req.user_id = decodedToken._id
-
-
+        const {success,decoded} = verifyToken(token);
+        if(!success){
+            return sendResponse(res, false, "Invalid or expired token", null, 401);
+        }
+        req.user_id = decoded._id
         next();
     } catch (error) {
-        return res.status(401).json({message:"invalid access Token", error})
+        return sendResponse(res, false, "Invalid or expired token", null, 401);
     }
 }
 
-export {jwtVerify}
+export {authMiddleware}

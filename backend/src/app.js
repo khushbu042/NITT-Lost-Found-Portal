@@ -14,16 +14,17 @@ app.use(cors({
     methods: ["GET", "POST", "PUT", "DELETE"]
 }));
 app.use(cookieParser());
+app.use('/static', express.static('public/temp'))
 
 
 // import Routes
 import {userRoute} from "./routers/user.route.js";
-// import { itemRouter } from "./routers/item.route.js";
+import { itemRoute } from "./routers/item.route.js";
 
 
 // route declaration
 app.use('/api/user',userRoute)
-// app.use('/api/item',itemRoute)
+app.use('/api/item',itemRoute)
 
 
 

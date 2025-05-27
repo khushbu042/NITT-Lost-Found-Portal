@@ -1,4 +1,6 @@
+import { Link } from "react-router-dom"
 const Home = () => {
+
   return (
     <section  id="how-it-works" className="bg-blue-50 rounded-lg shadow p-6 mb-8" >
     <p className="text-gray-700 text-center">
@@ -9,12 +11,12 @@ const Home = () => {
     </p>
     {/* Action Buttons */}
     <div className="flex flex-col md:flex-row justify-center gap-4 mb-8">
-        <button className="px-6 py-3 bg-blue-500 text-white rounded-md shadow hover:bg-blue-600">
+        <Link to='/search' className="px-6 py-3 bg-blue-500 text-white rounded-md shadow hover:bg-blue-600">
         I Lost Something
-        </button>
-        <button className="px-6 py-3 bg-orange-500 text-white rounded-md shadow hover:bg-orange-600">
+        </Link>
+        <Link className="px-6 py-3 bg-orange-500 text-white rounded-md shadow hover:bg-orange-600">
         I Found Something
-        </button>
+        </Link>
     </div>
     </section>
 

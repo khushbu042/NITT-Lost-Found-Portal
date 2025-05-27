@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import {User} from "./user.model.js"
 const ItemSchema = new mongoose.Schema({
     title : {
-        type : string,
+        type : String,
         required : true
     },
     category: {
