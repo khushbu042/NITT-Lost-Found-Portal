@@ -1,7 +1,16 @@
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import {recentItem} from '../api/item.api';
 
 const Dashboard = () => {
+
+  useEffect(()=>{
+    async function fetchData(){
+      const res = await recentItem();
+      console.log("Dashboard Item",res.data);
+    }
+    fetchData();
+  },[])
   return (
     <div className="min-h-screen flex bg-gray-100">
       {/* Sidebar */}

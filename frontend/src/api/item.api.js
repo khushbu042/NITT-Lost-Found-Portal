@@ -13,3 +13,11 @@ export const searchItems = async (searchTerm,location,category) => {
   console.log("Backend Search API:", res);
   return res.data.data;
 }
+
+export const recentItem = async() => {
+  const res = await axios.get("http://localhost:8000/api/item/recent-item",{
+    withCredentials: true
+  });
+  console.log("Bacnend Recent Item",res);
+  return res.data;
+}

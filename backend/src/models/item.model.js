@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
-import {User} from "./user.model.js"
+
+
 const ItemSchema = new mongoose.Schema({
     title : {
         type : String,
@@ -33,7 +34,7 @@ const ItemSchema = new mongoose.Schema({
     },
     claimedBy:{
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
+        ref: 'User',
         default: null
     }
 
